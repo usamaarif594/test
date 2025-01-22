@@ -8,7 +8,7 @@ import threading
 import schedule
 import time
 from datetime import datetime
-from scraper import scraper
+# from scraper import scraper
 target_tz = pytz.timezone('America/New_York')
 
 def run_scheduler():
