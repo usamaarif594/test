@@ -32,25 +32,24 @@ st.set_page_config(layout="wide")
 
 from io import BytesIO
 
-def take_screenshot_as_pdf():
-    """Takes a screenshot of the entire screen and provides it for download as a PDF."""
-    screenshot = pyautogui.screenshot()
-    current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
-    pdf_file_name = f"search_results_{current_time}.pdf"
-
-    # Save screenshot as PDF in memory
-    pdf_bytes = BytesIO()
-    screenshot.save(pdf_bytes, "PDF")
-    pdf_bytes.seek(0)  # Move to the beginning of the file
-
-    # Provide download button
-    st.download_button(
-        label="Download Screenshot as PDF",
-        data=pdf_bytes,
-        file_name=pdf_file_name,
-        mime="application/pdf"
-    )
-
+def export_results_to_pdf():
+    """
+    Exports the current search results to PDF using pdfkit
+    """
+    if not st.session_state.get('results') is None and not st.session_state['results'].empty:
+        # Convert results to CSV for easier handling
+        csv_buffer = BytesIO()
+        st.session_state['results'].to_csv(csv_buffer, index=False)
+        csv_buffer.seek(0)
+        
+        # Provide download button for CSV instead of PDF
+        current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+        st.download_button(
+            label="Download Results as CSV",
+            data=csv_buffer,
+            file_name=f"search_results_{current_time}.csv",
+            mime="text/csv"
+        )
 
 
 
@@ -180,7 +179,7 @@ def main():
         "<h5 style='text-align: left; color: #888888;'>Pinpoint Commercial Opportunities with the City of New York</h5>",
         unsafe_allow_html=True,
     )
-
+    export_results_to_pdf()
     st.sidebar.header("Search Filters")
 
     # Reset the widgets by using empty default values when reset_trigger is True
@@ -255,10 +254,9 @@ def main():
         reset_all_states()
         st.rerun()
 
-    if st.session_state.get("search_clicked", False):
+    # if st.session_state.get("search_clicked", False):
 
         
-        take_screenshot_as_pdf()
 
     # Display results only if search was clicked and filters were applied
     if st.session_state.show_results and not st.session_state.results.empty:
