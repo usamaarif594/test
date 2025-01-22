@@ -34,13 +34,14 @@ st.set_page_config(layout="wide")
 from io import BytesIO
 
 async def take_streamlit_screenshot():
-    """Take a screenshot of the Streamlit app."""
-    browser = await launch()
+    """Take a screenshot of the Streamlit app in headless mode."""
+    browser = await launch(headless=True)
     page = await browser.newPage()
     await page.goto("http://localhost:8501", waitUntil="networkidle0")
     screenshot_bytes = await page.screenshot()
     await browser.close()
     return screenshot_bytes
+
 
 def take_screenshot_as_image():
     """Streamlit wrapper for the screenshot function."""
