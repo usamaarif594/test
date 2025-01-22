@@ -1,0 +1,7 @@
+streamlit
+pandas
+sqlite3
+pytz
+threading
+pyautogui
+scraper
