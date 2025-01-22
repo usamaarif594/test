@@ -10,7 +10,6 @@ import time
 import pyautogui
 from datetime import datetime
 from scraper import scraper
-import asyncio
 target_tz = pytz.timezone('America/New_York')
 
 def run_scheduler():
@@ -33,30 +32,26 @@ st.set_page_config(layout="wide")
 
 from io import BytesIO
 
-async def take_streamlit_screenshot():
-    """Take a screenshot of the Streamlit app in headless mode."""
-    browser = await launch(headless=True)
-    page = await browser.newPage()
-    await page.goto("http://localhost:8501", waitUntil="networkidle0")
-    screenshot_bytes = await page.screenshot()
-    await browser.close()
-    return screenshot_bytes
+def take_screenshot_as_pdf():
+    """Takes a screenshot of the entire screen and provides it for download as a PDF."""
+    screenshot = pyautogui.screenshot()
+    current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+    pdf_file_name = f"search_results_{current_time}.pdf"
+
+    # Save screenshot as PDF in memory
+    pdf_bytes = BytesIO()
+    screenshot.save(pdf_bytes, "PDF")
+    pdf_bytes.seek(0)  # Move to the beginning of the file
+
+    # Provide download button
+    st.download_button(
+        label="Download Screenshot as PDF",
+        data=pdf_bytes,
+        file_name=pdf_file_name,
+        mime="application/pdf"
+    )
 
 
-def take_screenshot_as_image():
-    """Streamlit wrapper for the screenshot function."""
-    try:
-        screenshot_bytes = asyncio.run(take_streamlit_screenshot())
-        current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
-        file_name = f"app_screenshot_{current_time}.png"
-        st.download_button(
-            label="Download Screenshot",
-            data=screenshot_bytes,
-            file_name=file_name,
-            mime="image/png"
-        )
-    except Exception as e:
-        st.error(f"Error taking screenshot: {e}")
 
 
 
@@ -96,42 +91,42 @@ def search_data(keyword, agency, procurement_method, fiscal_quarter, job_titles,
         params.append(headcount)
     
     return pd.read_sql_query(query, conn, params=params)
-# def check_password():
-#     """Returns `True` if the user had a correct password."""
+def check_password():
+    """Returns `True` if the user had a correct password."""
 
-#     def login_form():
-#         """Form with widgets to collect user information"""
-#         with st.form("Credentials"):
-#             st.text_input("Username", key="username")
-#             st.text_input("Password", type="password", key="password")
-#             st.form_submit_button("Log in", on_click=password_entered)
+    def login_form():
+        """Form with widgets to collect user information"""
+        with st.form("Credentials"):
+            st.text_input("Username", key="username")
+            st.text_input("Password", type="password", key="password")
+            st.form_submit_button("Log in", on_click=password_entered)
 
-#     def password_entered():
-#         """Checks whether a password entered by the user is correct."""
-#         print(st.secrets)
-#         if st.session_state["username"] in st.secrets["passwords"] and hmac.compare_digest(
-#             st.session_state["password"],
-#             st.secrets.passwords[st.session_state["username"]],
-#         ):
-#             st.session_state["password_correct"] = True
-#             del st.session_state["password"]  # Don't store the username or password.
-#             del st.session_state["username"]
-#         else:
-#             st.session_state["password_correct"] = False
+    def password_entered():
+        """Checks whether a password entered by the user is correct."""
+        print(st.secrets)
+        if st.session_state["username"] in st.secrets["passwords"] and hmac.compare_digest(
+            st.session_state["password"],
+            st.secrets.passwords[st.session_state["username"]],
+        ):
+            st.session_state["password_correct"] = True
+            del st.session_state["password"]  # Don't store the username or password.
+            del st.session_state["username"]
+        else:
+            st.session_state["password_correct"] = False
 
-#     # Return True if the username + password is validated.
-#     if st.session_state.get("password_correct", False):
-#         return True
+    # Return True if the username + password is validated.
+    if st.session_state.get("password_correct", False):
+        return True
 
-#     # Show inputs for username + password.
-#     login_form()
-#     if "password_correct" in st.session_state:
-#         st.error("😕 User not known or password incorrect")
-#     return False
+    # Show inputs for username + password.
+    login_form()
+    if "password_correct" in st.session_state:
+        st.error("😕 User not known or password incorrect")
+    return False
 
 
-# if not check_password():
-#     st.stop()
+if not check_password():
+    st.stop()
 
 def reset_all_states():
     # List of all session state variables to clear
