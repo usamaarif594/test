@@ -10,6 +10,7 @@ import time
 import pyautogui
 from datetime import datetime
 from scraper import scraper
+import asyncio
 target_tz = pytz.timezone('America/New_York')
 
 def run_scheduler():
@@ -32,26 +33,29 @@ st.set_page_config(layout="wide")
 
 from io import BytesIO
 
-def take_screenshot_as_pdf():
-    """Takes a screenshot of the entire screen and provides it for download as a PDF."""
-    screenshot = pyautogui.screenshot()
-    current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
-    pdf_file_name = f"search_results_{current_time}.pdf"
+async def take_streamlit_screenshot():
+    """Take a screenshot of the Streamlit app."""
+    browser = await launch()
+    page = await browser.newPage()
+    await page.goto("http://localhost:8501", waitUntil="networkidle0")
+    screenshot_bytes = await page.screenshot()
+    await browser.close()
+    return screenshot_bytes
 
-    # Save screenshot as PDF in memory
-    pdf_bytes = BytesIO()
-    screenshot.save(pdf_bytes, "PDF")
-    pdf_bytes.seek(0)  # Move to the beginning of the file
-
-    # Provide download button
-    st.download_button(
-        label="Download Screenshot as PDF",
-        data=pdf_bytes,
-        file_name=pdf_file_name,
-        mime="application/pdf"
-    )
-
-
+def take_screenshot_as_image():
+    """Streamlit wrapper for the screenshot function."""
+    try:
+        screenshot_bytes = asyncio.run(take_streamlit_screenshot())
+        current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+        file_name = f"app_screenshot_{current_time}.png"
+        st.download_button(
+            label="Download Screenshot",
+            data=screenshot_bytes,
+            file_name=file_name,
+            mime="image/png"
+        )
+    except Exception as e:
+        st.error(f"Error taking screenshot: {e}")
 
 
 
