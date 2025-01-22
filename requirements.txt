@@ -6,4 +6,5 @@ flashtext
 pyautogui
 scraper
 pyppeteer
-
+mss
+PIL
