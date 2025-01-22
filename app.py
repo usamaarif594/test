@@ -1,6 +1,7 @@
 from mss import mss
 from PIL import Image
 from io import BytesIO
+import streamlit as st
 
 def take_screenshot_as_pdf():
     """Takes a screenshot of the entire screen and provides it for download as a PDF."""
