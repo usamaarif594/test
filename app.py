@@ -23,3 +23,6 @@ def take_screenshot_as_pdf():
             file_name=pdf_file_name,
             mime="application/pdf"
         )
+if st.button('ss'):
+    take_screenshot_as_pdf()
+    st.write('DOne")
