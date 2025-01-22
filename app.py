@@ -8,6 +8,7 @@ def generate_pdf():
     current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
     pdf_file_name = f"search_results_{current_time}.pdf"
 
+    
     # Define HTML content
     html_content = """
     <html>
