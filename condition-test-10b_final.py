@@ -7,7 +7,6 @@ import pytz
 import threading
 import schedule
 import time
-import pyautogui
 from datetime import datetime
 from scraper import scraper
 target_tz = pytz.timezone('America/New_York')
