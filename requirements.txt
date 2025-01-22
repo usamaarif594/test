@@ -5,3 +5,5 @@ pytz
 flashtext
 pyautogui
 scraper
+pyppeteer
+
