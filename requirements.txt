@@ -1,6 +1,6 @@
 streamlit
 pandas
 pytz
-threading
+
 pyautogui
 scraper
