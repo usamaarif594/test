@@ -8,4 +8,7 @@ scraper
 pyppeteer
 mss
 Pillow
+pdfkit
+wkhtmltopdf
+
 
