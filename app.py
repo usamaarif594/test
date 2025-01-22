@@ -3,27 +3,38 @@ from io import BytesIO
 from datetime import datetime
 import pdfkit
 
-def generate_pdf_from_html():
-    """Generates a PDF from Streamlit app content."""
+def generate_pdf():
+    """Generates a PDF from predefined HTML content."""
     current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
     pdf_file_name = f"search_results_{current_time}.pdf"
 
-    # Capture Streamlit's rendered content
-    html_content = st._get_report_ctx().session_id  # Access the current session
-    pdf_bytes = BytesIO()
+    # Define HTML content
+    html_content = """
+    <html>
+    <head>
+        <title>Streamlit App PDF</title>
+    </head>
+    <body>
+        <h1>Streamlit App Content</h1>
+        <p>This is the content of your Streamlit app saved as a PDF.</p>
+    </body>
+    </html>
+    """
 
-    # Generate PDF using pdfkit or weasyprint
-    pdfkit.from_string(html_content, pdf_bytes)  # Use pdfkit to convert HTML to PDF
+    # Save HTML as PDF in memory
+    pdf_bytes = BytesIO()
+    pdfkit.from_string(html_content, output_path=pdf_bytes)
     pdf_bytes.seek(0)
 
     # Provide download button
     st.download_button(
         label="Download App Content as PDF",
-        data=pdf_bytes,
+        data=pdf_bytes.getvalue(),
         file_name=pdf_file_name,
         mime="application/pdf"
     )
 
+st.title('Screenshot as PDF')
 if st.button("Generate PDF"):
-    generate_pdf_from_html()
+    generate_pdf()
     st.write("PDF Generated!")
